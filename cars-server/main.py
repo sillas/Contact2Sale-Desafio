@@ -1,25 +1,31 @@
-from json import loads
+from typing import Literal
 from mcp.server.fastmcp import FastMCP
-from config.logger import logger
-from config.db_config import db
 
-from cars import query_cars
+from src.config.logger import logger
+from src.config.db_config import db
+from src.car_service import search_cars
 
-# Initialize FastMCP server
 mcp = FastMCP("cars")
 
 
 @mcp.tool()
-async def get_cars(query: str) -> str:
+async def get_cars(query: dict, limit: int = 0, sort_by: str = '', sort_dir: Literal['asc', 'desc'] = 'asc') -> str:
     """Get cars from MongoDB database.
     Args:
-        query (str): String query in JSON format for mongoDB, with -attributes- for search cars.
+        query (dict): Dict query in JSON format for mongoDB, with -attributes- for search cars.
+        limit (int): Limit the number of output. 0 = No limit.
+        sort_by (str): Optional. Field name to sort the results by.
+        sort_dir (str): Optional. Sorting direction. Use 'asc' for ascending or 'desc' for descending.
     Examples:
         # Correct format with escaped quotes:
-        {`query`: `{\\\"year\\\": 2025}`}
+        {`query`: `{\"year\": 2025}`}
 
         # Multiple fields example:
-        {`query`: `{\\\"year\\\": 2025, \\\"brand\\\": \\\"Toyota\\\"}`}
+        {`query`: `{\"year\": 2025, \"brand\": \"Toyota\"}`}
+
+        # Sort
+        {`query`: `{\"year\": 2025}`, `sort_by`: `price`}
+        {`query`: `{\"year\": 2025}`, `sort_by`: `price`, `sort_dir`: `asc`}
 
     Attributes:
         brand (str),
@@ -38,27 +44,9 @@ async def get_cars(query: str) -> str:
         drivetrain (str),
         fuel_consumption_km_per_l (float),
         horsepower_hp (int)
-
-    Note:
-        The query must be properly escaped with double backslashes (\\\\) before quotes.
-        Invalid format: {`query`: `{\"year\": 2025}`}
-        Valid format: {`query`: `{\\\"year\\\": 2025}`}
     """
-    logger.info(f"SERVER pre-query: -{type(query)} | {query}-\n")
-
-    if ("'" in query):
-        query = query.replace("'", '"')
-
-    if ('\\' in query):
-        query = query.replace('\\', '')
-
-    try:
-        query_dict = loads(query)
-        logger.info(f"SERVER pos-query: -{type(query_dict)} | {query_dict}-\n")
-        return query_cars(query_dict)
-
-    except Exception as e:
-        return f"O formato de entrada está inválido. Input: {query}. Erro: {str(e)}"
+    logger.info(f"SERVER Limit: {limit}, query: {type(query)} {query}-\n")
+    return search_cars(query, limit, sort_by, sort_dir)
 
 
 if __name__ == "__main__":
@@ -68,19 +56,3 @@ if __name__ == "__main__":
 
     logger.info("SERVER Start MCP Server")
     mcp.run(transport='stdio')
-
-# uv run main.py
-# https://mariofilho.com/claude-anthropic-api-python/#gere-uma-api-key
-
-# {
-#     "mcpServers": {
-#         "cars": {
-#             "command": "wsl.exe",
-#             "args": [
-#                 "-d", "Ubuntu",
-#                 "bash", "-lc",
-#                 "cd ~/c2s_test/cars-server && source .venv/bin/activate && uv run main.py"
-#             ]
-#         }
-#     }
-# }

@@ -2,7 +2,7 @@ import pymongo
 from pymongo.errors import ServerSelectionTimeoutError
 from bson.codec_options import CodecOptions
 
-from config.logger import logger
+from src.config.logger import logger
 
 
 class ConfigDB:

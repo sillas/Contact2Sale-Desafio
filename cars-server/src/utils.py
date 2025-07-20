@@ -1,5 +1,4 @@
 from typing import Any
-from config.db_config import db
 
 
 def format_output(result: list[dict[str, Any]]) -> str:
@@ -34,32 +33,7 @@ def format_output(result: list[dict[str, Any]]) -> str:
             f"Capacidade de carga: {format(item['cargo_capacity_liters'], 'kg')}\n" \
             f"Tipo de Suspensão: {item['suspension']}\n" \
             f"Tipo de Tração: {format(item['drivetrain'])}\n" \
-            f"Consumo: {format(item['fuel_consumption_km_per_l'], 'L/h')}\n" \
+            f"Consumo: {format(item['fuel_consumption_km_per_l'], 'kl/L')}\n" \
             f"Potência do motor: {format(item['horsepower_hp'], 'hp')}\n"
 
-    response += "---\n"
-    return response
-
-
-def query_cars(query: dict) -> str:
-    """Retrieves cars from the database based on the provided query.
-        Args:
-            query (dict): A dictionary representing the query to filter cars.
-        Returns:
-            str: A formatted string containing the retrieved cars.
-        """
-
-    cars = db.collection.find(query)
-
-    return format_output(cars)
-
-
-# To test
-if __name__ == "__main__":
-
-    if (db.collection is None):
-        raise Exception("MongoDB não inicializado!")
-
-    q = {"year": {"$gte": 2020}}
-    result = format_output(q)
-    print(result)
+    return response if response else 'not found'

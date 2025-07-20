@@ -3,11 +3,12 @@ import random
 from datetime import date
 from pymongo.errors import CollectionInvalid
 from faker import Faker
-from config.db_config import db as mongo
+from src.config.db_config import db as mongo
 
 fake = Faker()
 today = date.today()
 year = today.year
+register_count = 10
 
 alowed_colors = ["Red", "Blue", "Black", "White", "Silver", "Gray"]
 alowed_fuel_type = ["Gasoline", "Diesel", "Ethanol", "Electric", "Hybrid"]
@@ -92,7 +93,7 @@ def populate_db():
         return
 
     db_create()
-    cars_batch = [car_data_gen() for _ in range(10)]
+    cars_batch = [car_data_gen() for _ in range(register_count)]
     mongo.collection.insert_many(cars_batch)
 
 
