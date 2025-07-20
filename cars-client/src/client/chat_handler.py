@@ -1,6 +1,7 @@
 from config.settings import logger
 from client.strings.messages import welcome_message
 
+
 class Chat:
 
     def __init__(self, mcp_client, messages):
@@ -11,7 +12,7 @@ class Chat:
         """Run an interactive chat loop"""
 
         logger.info(welcome_message)
-        logger.info("Para sair, digite q")
+        logger.info("Para encerrar o chat, escreva q")
 
         self.messages.add(welcome_message)
 

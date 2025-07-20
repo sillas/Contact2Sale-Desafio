@@ -2,6 +2,7 @@ import asyncio
 
 from client.mcp_client import MCPClient
 from client.providers.antropic_llm_provider import AnthropicProvider
+from client.llm import LLM
 from client.chat_handler import Chat
 from client.message import Message
 
@@ -15,9 +16,9 @@ async def main():
         logger.info("Usage: python client.py <path_to_server_script>")
         sys.exit(1)
 
-    llm_provider = AnthropicProvider()
+    llm = LLM(AnthropicProvider)
     messages = Message(main_prompt)
-    mcp_client = MCPClient(llm_provider, messages)
+    mcp_client = MCPClient(llm, messages)
     chat = Chat(mcp_client, messages)
 
     try:

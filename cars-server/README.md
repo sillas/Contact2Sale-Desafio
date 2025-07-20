@@ -28,13 +28,15 @@ de acordo com a query fornecida, e retornar para o cliente em uma string estrutu
 
 ## Instalação
 ### 0 - Se ainda não tiver, instale o MongoDB localmente:
+
+- MongoDB
 [https://www.mongodb.com/pt-br/docs/manual/installation/]
 
-- E o ative no terminal como administrador, (se estiver no Windows), e se ainda não foi ativado:
+E o ative no terminal como administrador, (se estiver no Windows), e se ainda não foi ativado:
 `$ net start MongoDB` 
 
 ### 1 - Inicie um ambiente virtual e o ative:
-`$ uv .venv`
+`$ uv venv`
 `$ source .venv/bin/activate`
 
 ### 2 - Instale as dependêcias do projeto (do servidor):
