@@ -46,7 +46,7 @@ async def get_cars(query: dict, limit: int = 0, sort_by: str = '', sort_dir: Lit
         horsepower_hp (int)
     """
     logger.info(f"SERVER Limit: {limit}, query: {type(query)} {query}-\n")
-    return search_cars(query, limit, sort_by, sort_dir)
+    return search_cars(query, limit, sort_by.strip(), sort_dir)
 
 
 if __name__ == "__main__":
