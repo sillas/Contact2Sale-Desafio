@@ -1,6 +1,7 @@
 from typing import Any, Literal
 from src.car_repository import find_cars
 from src.utils import format_output
+from src.config.logger import logger
 
 
 def search_cars(query: dict[str, Any], limit: int, sort_by: str, sort_dir: Literal['asc', 'desc']) -> str:
@@ -9,8 +10,7 @@ def search_cars(query: dict[str, Any], limit: int, sort_by: str, sort_dir: Liter
 
     If the query are successful, returns the result of the car query.
     If any error occurs during the process, returns an error message.
-    Args:
-        query (dict): A dict representing the car query.
+
     Returns:
         str: The result of the car query, or an error message if the input is invalid or an error occurs.
     """
@@ -19,4 +19,6 @@ def search_cars(query: dict[str, Any], limit: int, sort_by: str, sort_dir: Liter
         return format_output(cars)
 
     except Exception as e:
-        return f"O formato de entrada está inválido. Input: {query}. Erro: {str(e)}"
+        logger.exception(
+            f"search_cars ERROR: {str(e)}, Input: {query}", exc_info=e)
+        return f"Error! Input: {query}. Error: {str(e)}"

@@ -52,7 +52,7 @@ async def get_cars(query: dict, limit: int = 0, sort_by: str = '', sort_dir: Lit
 if __name__ == "__main__":
 
     if (db.collection is None):
-        raise Exception("MongoDB não inicializado!")
+        raise Exception("Serviço MongoDB não inicializado!")
 
     logger.info("SERVER Start MCP Server")
     mcp.run(transport='stdio')
