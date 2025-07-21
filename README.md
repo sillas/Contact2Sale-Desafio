@@ -9,3 +9,5 @@ uv run main.py
 
 Inicializar o cliente:
 uv run main.py
+
+# TODO: Documentar tudo e fazer o vídeo. Se der tempo, implementar os testes.

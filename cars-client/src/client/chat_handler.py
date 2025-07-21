@@ -1,6 +1,9 @@
 from src.config.settings import logger
 from src.client.strings.messages import welcome_message
 
+YELLOW = '\033[33m'
+RESET = '\033[0m'
+
 
 class Chat:
 
@@ -30,9 +33,11 @@ class Chat:
                 self.messages.set(query, role="user")
                 await self.mcp_client.process_query()
 
-                logger.info("R:-------------------------------------\n")
-                logger.info(str(self.messages))
-                logger.info("\n---------------------------------------\n")
+                logger.info(
+                    f"{YELLOW}R:-------------------------------------\n{RESET}")
+                logger.info(f"{YELLOW}{str(self.messages)}{RESET}")
+                logger.info(
+                    f"{YELLOW}\n---------------------------------------\n{RESET}")
 
             except Exception as e:
                 logger.exception(f"\nLoop Error", exc_info=e)

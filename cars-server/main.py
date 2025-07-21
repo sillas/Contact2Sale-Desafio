@@ -4,6 +4,7 @@ from mcp.server.fastmcp import FastMCP
 from src.config.logger import logger
 from src.config.db_config import db
 from src.car_service import search_cars
+from src.file_handler import save_as_pdf
 
 mcp = FastMCP("cars")
 
@@ -45,9 +46,25 @@ async def get_cars(query: dict, limit: int = 0, sort_by: str = '', sort_dir: Lit
         fuel_consumption_km_per_l (float),
         horsepower_hp (int)
     """
-    logger.info(f"SERVER Limit: {limit}, query: {type(query)} {query}-\n")
+    logger.info(
+        f"SERVER - get_cars: Limit: {limit}, query: {type(query)} {query}-\n")
     return search_cars(query, limit, sort_by.strip(), sort_dir)
 
+
+@mcp.tool()
+async def save_to_file(title: str, content: str) -> str:
+    """Save content to a PDF file.
+    Args:
+        title (str): The title for the document and file, with a maximum of 150 characters.
+        content (str): The pure text content to be saved in the file.
+
+    Instructions:
+        Do not use HTML, Markdown, Json or XML sintaxe
+    """
+    logger.info(
+        f"SERVER - save_to_file: title: {title} content: {type(content)}-\n")
+
+    return save_as_pdf(title, content)
 
 if __name__ == "__main__":
 

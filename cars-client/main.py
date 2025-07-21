@@ -6,7 +6,6 @@ from src.client.llm import LLM
 from src.client.chat_handler import Chat
 from src.client.message import Message
 
-from src.config.settings import logger
 from src.client.strings.prompts import main_prompt
 
 
