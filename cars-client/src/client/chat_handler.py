@@ -41,16 +41,3 @@ class Chat:
 
             except Exception as e:
                 logger.exception(f"\nLoop Error", exc_info=e)
-
-
-""" instructions
-Objetivo:
-Uma concessionária que um agente vendedor;
-
-INIT: agente conversa com o usuário
-Ele entende o que o usuário está buscando, faz perguntas;
-    - As perguntas não precisam seguir um padrão engessado tipo formulário;
-Depois de coletar os dados, o cliente MCP envia tudo pro servidor.
-O servidor busca no banco e retorna os veículos compatíveis
-agente exibe uma resposta amigável com os resultados, incluindo: marca, modelo, ano, cor, quilometragem e preço.
-"""

@@ -19,10 +19,9 @@ async def main():
     try:
         await mcp_client.connect_to_server()
         await chat.loop()
+
     finally:
         await mcp_client.cleanup()
 
 if __name__ == "__main__":
     asyncio.run(main())
-
-# uv run src/main.py ../cars/cars.py

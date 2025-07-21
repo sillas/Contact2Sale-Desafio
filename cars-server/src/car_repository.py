@@ -3,7 +3,9 @@ from typing import Any, Literal
 
 from pymongo import ASCENDING, DESCENDING
 from pymongo.errors import OperationFailure, InvalidOperation, ConnectionFailure
-from fpdf import FPDF, XPos, YPos
+
+from fpdf import FPDF
+from fpdf.enums import XPos, YPos
 
 from src.config.logger import logger
 from src.config.db_config import db
@@ -82,7 +84,6 @@ def create_pdf(title: str, content: str, save_path: str) -> str:
             align='C'
         )
         pdf.ln(10)
-
         pdf.set_font(size=12)
         pdf.multi_cell(
             w=0, h=10,
