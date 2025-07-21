@@ -14,7 +14,7 @@
 ## Pré-requisitos
 - Python 3.10+
 - MongoDB
-- Claude Desktop (Opcional)
+- Claude Desktop (Opcional - Windows)
 
 ## Descrição
 Este servidor MCP é responsável por buscar os registros de automóveis no banco de dados [MongoDB] 
@@ -40,6 +40,8 @@ E o ative no terminal como administrador, (se estiver no Windows), e se ainda n�
 `$ source .venv/bin/activate`
 
 ### 2 - Instale as dependêcias do projeto (do servidor):
+`$ uv sync --locked`
+ou
 `$ uv pip install -r requirements.txt`
 
 ### 3 - Crie e popule o banco de dados MongoDB para testes:

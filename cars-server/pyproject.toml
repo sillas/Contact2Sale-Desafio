@@ -5,5 +5,9 @@ description = "MCP Server for MongoDB access to search cars"
 readme = "README.md"
 requires-python = ">=3.10"
 dependencies = [
+    "faker>=37.4.2",
+    "fpdf>=1.7.2",
     "mcp[cli]>=1.11.0",
+    "pymongo>=4.13.2",
+    "python-dotenv>=1.1.1",
 ]

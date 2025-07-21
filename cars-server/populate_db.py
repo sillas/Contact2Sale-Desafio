@@ -8,7 +8,7 @@ from src.config.db_config import db as mongo
 fake = Faker()
 today = date.today()
 year = today.year
-register_count = 10
+register_count = 100
 
 alowed_colors = ["Red", "Blue", "Black", "White", "Silver", "Gray"]
 alowed_fuel_type = ["Gasoline", "Diesel", "Ethanol", "Electric", "Hybrid"]
@@ -99,24 +99,27 @@ def populate_db():
 
 def main():
     if len(sys.argv) < 2:
-        print("Usage: python populate_db.py <p (populate), e (erase) or d (delete db)>")
-        return
+        return "Usage: python populate_db.py <p (populate), e (erase), d (delete db), c (check)>"
 
     user_input = sys.argv[1].lower()
 
     if (user_input == "p"):
         populate_db()
-        return
+        return f'Populated with {register_count} registers'
 
     if (user_input == "e"):
-        mongo.delete_many({})
-        return
+        mongo.collection.delete_many({})
+        return 'Remove all registers'
 
     if (user_input == "d"):
         mongo.collection.drop()
-        return
+        return 'drop collection'
 
-    print(f"Comando {user_input} não encontrado.")
+    if (user_input == "c"):
+        result = mongo.collection.count_documents({})
+        return f"{result} registers"
+
+    return f"Command {user_input} not faund."
 
 
 if __name__ == "__main__":
@@ -124,4 +127,5 @@ if __name__ == "__main__":
     if (mongo.collection is None):
         raise Exception("MongoDB não inicializado!")
 
-    main()
+    r = main()
+    print(r)
