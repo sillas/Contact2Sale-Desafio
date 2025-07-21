@@ -1,96 +1,130 @@
-# Servidor MCP [Cars] - Contact 2 Sale
+# Servidor MCP \[Cars] – Contact 2 Sale
 
 ![Version](https://img.shields.io/badge/version-1.0.0-blue.svg)
 ![Python](https://img.shields.io/badge/python-3.10+-green.svg)
 
 ## Sumário
-- [Pré-requisitos](#pré-requisitos)
-- [Instalação](#instalação)
-- [Descrição](#descrição)
-- [Instalação](#instalação)
-- [Exemplos de Queries](#exemplos-de-queries)
-- [Estrutura do Projeto](#estrutura-do-projeto)
+
+* [Pré-requisitos](#pré-requisitos)
+* [Descrição](#descrição)
+* [Instalação](#instalação)
+* [Testes](#testes)
+* [Exemplos de Queries](#exemplos-de-queries)
+* [Estrutura do Projeto](#estrutura-do-projeto)
 
 ## Pré-requisitos
-- Python 3.10+
-- MongoDB
-- Claude Desktop (Opcional - Windows)
+
+* Python 3.10 ou superior
+* MongoDB instalado e em execução
+* Claude Desktop (opcional, apenas para Windows)
+* Chave de API da Anthropic com créditos disponíveis:
+  [https://console.anthropic.com/settings/keys](https://console.anthropic.com/settings/keys)
 
 ## Descrição
-Este servidor MCP é responsável por buscar os registros de automóveis no banco de dados [MongoDB] 
-de acordo com a query fornecida, e retornar para o cliente em uma string estruturada.
 
-- Input: 
-    query: dicioná'rio, 
-    limit: inteiro = 0, 
-    sort_by: string = '', 
-    sort_dir: 'asc' | 'desc'
+Este servidor MCP é responsável por consultar registros de automóveis armazenados em um banco de dados MongoDB e retornar os resultados ao cliente, seguindo o protocolo MCP.
+
+### Parâmetros de entrada:
+
+* `query` (dict): critérios de busca
+* `limit` (int, opcional): número máximo de resultados
+* `sort_by` (str, opcional): campo para ordenação
+* `sort_dir` (`asc` | `desc`): direção da ordenação
 
 ## Instalação
-### 0 - Se ainda não tiver, instale o MongoDB localmente:
 
-- MongoDB
-[https://www.mongodb.com/pt-br/docs/manual/installation/]
+### 0 - Instalar e iniciar o MongoDB
 
-E o ative no terminal como administrador, (se estiver no Windows), e se ainda não foi ativado:
-`$ net start MongoDB` 
+* Guia oficial de instalação:
+  [https://www.mongodb.com/pt-br/docs/manual/installation/](https://www.mongodb.com/pt-br/docs/manual/installation/)
 
-### 1 - Inicie um ambiente virtual e o ative:
-`$ uv venv`
-`$ source .venv/bin/activate`
+No Windows, para iniciar o serviço via terminal com permissões de administrador:
 
-### 2 - Instale as dependêcias do projeto (do servidor):
-`$ uv sync --locked`
+```bash
+net start MongoDB
+```
 
-### 3 - Crie e popule o banco de dados MongoDB para testes:
-`uv run populate_db.py p`
-para verificar, use:
-`uv run populate_db.py c`
+### 1 - Configurar ambiente Python
 
-### 4 - Testes iniciais (opcional) com o servidor MCP e cliente Claude Desktop (Se estiver no Windows):
-- Para outros sistemas operacionais, consultar [https://modelcontextprotocol.io/quickstart/server]
+```bash
+# Criar ambiente virtual
+uv venv
 
-1. Inicie o Claude Desktop, acesse a opção `Busca e Ferramentas`, ao lado do botão para incluir anexos.
-2. Selecione a opção `gerenciar conectores` e depois, acesse a aba `Desenvolvedor`, e depois, `Edit Config`;
-3. Vai abrir o explorador de arquivos, e você deve localizar e abrir o arquivo `claude_desktop_config.json` para edição.
-4. Insira o JSON abaixo neste arquivo, substituindo `path/to` pelo caminho absoluto até o diretório `cars-server`.
-```Json
+# Ativar ambiente virtual
+source .venv/bin/activate
+```
+
+### 2 - Instalar dependências
+
+```bash
+uv sync --locked
+```
+
+### 3 - Criar e popular o banco de dados
+
+```bash
+# Popular o banco de dados com dados de teste
+uv run populate_db.py p
+
+# Verificar dados no banco
+uv run populate_db.py c
+```
+
+## Testes
+
+### Integração com Claude Desktop (opcional – Windows)
+
+> Para outros sistemas operacionais, veja:
+> [https://modelcontextprotocol.io/quickstart/server](https://modelcontextprotocol.io/quickstart/server)
+
+1. Inicie o Claude Desktop. Vá em **Busca e Ferramentas** > **Gerenciar conectores** > **Desenvolvedor** > **Edit Config**.
+2. Edite o arquivo `claude_desktop_config.json`, inserindo o seguinte conteúdo, substituindo `path/to` pelo caminho real da pasta `cars-server`:
+
+```json
 {
-    "mcpServers": {
-        "cars": {
-            "command": "uv",
-            "args": [
-                "--directory",
-                "C:\\path\\to\\c2s\\cars-server",
-                "run",
-                "main.py"
-            ]
-        }
+  "mcpServers": {
+    "cars": {
+      "command": "uv",
+      "args": [
+        "--directory",
+        "C:\\path\\to\\c2s\\cars-server",
+        "run",
+        "main.py"
+      ]
     }
+  }
 }
 ```
-5. Inicie o servidor MCP: No diretório rais do servidor (/cars-server), execute:
-    `$ uv run main.py`. 
-    Os logs aparecerão em `server_app.log`
-6. Feche o cliente Claude (se estiver aberto) e abra novamente.
-7. Se tudo correr bem, ao clicar novamente em `Busca e Ferramentas`, deve aparecer o nome do servidor nesta lista. No caso, [cars]
-8. Para verificar o funcionamento, faça uma pesquisa aleatória no chat da Claude sobre os carros, e verifique nos logs `server_app.log`.
+
+3. Execute o servidor MCP:
+
+```bash
+uv run main.py
+```
+
+> Os logs serão salvos em `server_app.log`.
+
+4. Reinicie o Claude Desktop. O servidor `cars` deve aparecer na aba de ferramentas.
+5. Realize uma busca no chat relacionada a automóveis e confira os logs.
 
 ## Exemplos de Queries
+
 ```json
-// Buscar carros da Toyota de 2025
+// Buscar carros da Toyota do ano de 2025
 {
-    "query": {"brand": "Toyota", "year": 2025}
+  "query": { "brand": "Toyota", "year": 2025 }
 }
 
-// Buscar carros ordenados por preço
+// Buscar carros elétricos ordenados por preço ascendente
 {
-    "query": {"fuel_type": "Electric"},
-    "sort_by": "price",
-    "sort_dir": "asc"
+  "query": { "fuel_type": "Electric" },
+  "sort_by": "price",
+  "sort_dir": "asc"
 }
 ```
+
 ## Estrutura do Projeto
+
 ```
 cars-server/
 ├── src/
