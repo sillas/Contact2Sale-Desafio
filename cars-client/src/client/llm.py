@@ -1,22 +1,29 @@
+import json
 from os import getenv
-from time import time
+import time
 from typing import Any
 from decimal import Decimal
-from datetime import datetime
-from dataclasses import dataclass
+# from datetime import datetime
+# from dataclasses import dataclass
 
-from src.interfaces.llm_interface import LLMProvider
+from src.interfaces.llm_interface import LLMInterface
 from src.config.settings import logger
 
 
-@dataclass
-class CallRecord:
-    timestamp: datetime
-    model: str
-    input_tokens: int
-    output_tokens: int
-    cost: Decimal
-    total_cost: Decimal
+# @dataclass
+# class CallRecord:
+#     timestamp: datetime
+#     model: str
+#     input_tokens: int
+#     output_tokens: int
+#     cost: Decimal
+#     total_cost: Decimal
+
+class MessageEncoder(json.JSONEncoder):
+    def default(self, obj):
+        if hasattr(obj, '__dict__'):
+            return obj.__dict__
+        return str(obj)
 
 
 class LLM:
@@ -28,7 +35,7 @@ class LLM:
     interface for making requests and managing the responses.
 
     Attributes:
-        provider (LLMProvider): An instance of the LLMProvider class, responsible for interacting
+        provider (LLMInterface): An instance of the LLMInterface class, responsible for interacting
             with the specific LLM being used.
         total_cost (Decimal): The cumulative cost of all LLM calls made through this instance.
         calls_history (list[CallRecord]): A list of dictionaries, where each dictionary contains
@@ -40,10 +47,15 @@ class LLM:
         last_call_timestamp_in_ms (int): The timestamp (in milliseconds) of the most recent LLM call.
         """
 
-    def __init__(self, provider: LLMProvider):
+    def __init__(self, provider: LLMInterface):
+        """Initializes the LLM client with a specified provider.
+
+        Args:
+            provider (LLMInterface): The LLM provider class to use.
+        """
         self.provider = provider(getenv('LLM_MODEL_NAME'))
         self.total_cost = Decimal('0')
-        self.calls_history: list[CallRecord] = []
+        # self.calls_history: list[CallRecord] = []
 
         # calls per minute
         self.rate_limit: int = self.provider.model['rate_limit']
@@ -76,23 +88,37 @@ class LLM:
         self._handle_rate_limit()
 
         try:
+
+            logger.debug('Mensagens....')
+            for msg in messages:
+                try:
+                    logger.debug(f"{json.dumps(msg, indent=2)}\n\n")
+
+                except Exception as e:
+                    logger.debug(
+                        f"json erro: message type: {type(msg)}, error: {str(e)}\n\n")
+                    logger.debug(
+                        f"JSON: {json.dumps(msg, indent=2, cls=MessageEncoder)}\n\n")
+
+            logger.debug('....')
+
             response = self.provider.call(messages, max_tokens, tools)
 
             cost = self.calculate_cost()
             input_tokens = self.provider.input_tokens
             output_tokens = self.provider.output_tokens
 
-            call_record = {
-                "timestamp": datetime.now().isoformat(),
-                "model": self.provider.model_name,
-                "input_tokens": input_tokens,
-                "output_tokens": output_tokens,
-                "cost": cost,
-                "total_cost": self.total_cost
-            }
-            self.calls_history.append(call_record)
+            # call_record = {
+            #     "timestamp": datetime.now().isoformat(),
+            #     "model": self.provider.model_name,
+            #     "input_tokens": input_tokens,
+            #     "output_tokens": output_tokens,
+            #     "cost": cost,
+            #     "total_cost": self.total_cost
+            # }
+            # self.calls_history.append(call_record)
 
-            logger.info(
+            logger.debug(
                 f"LLM Call: {input_tokens} input tokens, {output_tokens} output tokens. "
                 f"Cost: ${cost:.4f}. Total acumulado: ${self.total_cost:.4f}"
             )
@@ -101,6 +127,7 @@ class LLM:
 
         except Exception as e:
             logger.exception(f"LLM-Call Error: {str(e)}", exc_info=e)
+            raise
 
     def convert_tool_format(self, tool: Any) -> dict[str, Any]:
         """Convert tool format"""
@@ -109,8 +136,8 @@ class LLM:
     def calculate_cost(self) -> Decimal:
         """Calculates the total cost and the cost of each call."""
         # Get prices multiplied by 10.000
-        raw_input_price = Decimal(self.provider.PRICING[self.model]['input'])
-        raw_output_price = Decimal(self.provider.PRICING[self.model]['output'])
+        raw_input_price = Decimal(self.provider.model['input'])
+        raw_output_price = Decimal(self.provider.model['output'])
 
         # Normalize prices
         input_price: Decimal = raw_input_price / Decimal('10000')

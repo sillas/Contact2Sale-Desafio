@@ -1,21 +1,22 @@
 from typing import Any
 
+
 class Message:
-    def __init__(self, prompt:str = None):
+    def __init__(self, prompt: str = None):
         self.messages = []
 
-        if(prompt):
+        if (prompt):
             self.messages.append({
                 "role": "user",
                 "content": prompt
             })
-    
-    def add(self, message:str, role:str = "assistant"):
+
+    def set(self, message: str, role: str = "assistant"):
         self.messages.append({
             "role": role,
             "content": message
         })
-    
+
     def get(self) -> list[dict[str, Any]]:
         return self.messages
 

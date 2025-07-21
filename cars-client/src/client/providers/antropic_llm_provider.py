@@ -1,7 +1,6 @@
 from typing import Any
 import anthropic as antr
-
-from interfaces.llm_interface import LLMInterface
+from src.interfaces.llm_interface import LLMInterface
 
 
 class AnthropicProvider(LLMInterface):
@@ -67,9 +66,8 @@ class AnthropicProvider(LLMInterface):
 
             self.input_tokens = result.usage.input_tokens
             self.output_tokens = result.usage.output_tokens
-            content = result.content
 
-            return content
+            return result.content
         # C.f. https://docs.anthropic.com/en/api/errors
         except antr.BadRequestError as e:
             raise antr.BadRequestError(f'400 - Bad request: {str(e)}')
@@ -85,15 +83,15 @@ class AnthropicProvider(LLMInterface):
         except antr.NotFoundError as e:
             raise antr.NotFoundError(f'404 - Resource not found: {str(e)}')
 
-        except antr.RequestTooLargeError as e:
-            raise antr.RequestTooLargeError(
-                f'413 - Request too large: {str(e)}')
+        # except antr.RequestTooLargeError as e:
+        #     raise antr.RequestTooLargeError(
+        #         f'413 - Request too large: {str(e)}')
 
         except antr.RateLimitError as e:
             raise antr.RateLimitError(f'429 - Rate limit exceeded: {str(e)}')
 
-        except antr.OverloadedError as e:
-            raise antr.OverloadedError(f'529 - Server overloaded: {str(e)}')
+        # except antr.OverloadedError as e:
+        #     raise antr.OverloadedError(f'529 - Server overloaded: {str(e)}')
 
         except antr.APIConnectionError as e:
             raise antr.APIConnectionError(
@@ -104,8 +102,10 @@ class AnthropicProvider(LLMInterface):
                 f'HTTP {e.status_code} error: {str(e.response)}')
 
         except antr.APIError as e:
-            print("API error:", e)
             raise antr.APIError(f'API error: {str(e)}')
+
+        except Exception as e:
+            raise Exception("provider generic error: {str(e)}")
 
     def convert_tool_format(self, tool: Any) -> dict[str, Any]:
         """Converts a tool object to a dictionary format suitable for Anthropic's models."""

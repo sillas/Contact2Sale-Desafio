@@ -4,28 +4,28 @@ from contextlib import AsyncExitStack
 
 from mcp import ClientSession, StdioServerParameters
 from mcp.client.stdio import stdio_client
-
-from config.settings import logger
+from src.config.settings import logger
 
 
 class MCPClient:
 
-    def __init__(self, LLM_provider, messages):
+    def __init__(self, LLM, messages):
         self.session: Optional[ClientSession] = None
         self.exit_stack = AsyncExitStack()
-        self.llm_provider = LLM_provider
+        self.llm = LLM
         self.messages = messages
 
-    async def connect_to_server(self, server_script_path: str):
-        """Connect to an MCP server
-
-        Args:
-            server_script_path: Path to the server script (.py)
-        """
+    async def connect_to_server(self):
+        """Connect to an MCP server"""
 
         server_params = StdioServerParameters(
-            command="python",
-            args=[server_script_path],
+            command="uv",
+            args=[
+                "--directory",
+                "C:\\Users\\deeps\\Desktop\\Projetos\\c2s\\cars-server",
+                "run",
+                "main.py"
+            ],
             env=None
         )
 
@@ -38,22 +38,23 @@ class MCPClient:
         # List available tools
         response = await self.session.list_tools()
         tools = response.tools
-        logger.log(
+        logger.debug(
             f"\nConnected to server with tools: {[tool.name for tool in tools]}")
+
         logger.info("\nMCP Client Started!")
 
     async def process_query(self) -> str:
         """Process a query using Claude and available tools"""
 
         response = await self.session.list_tools()
-        available_tools = [self.llm_provider.convert_tool_format(
-            tool) for tool in response.tools]
+        available_tools = [
+            self.llm.convert_tool_format(tool) for tool in response.tools]
 
-        logger.log(f"available_tools: {json.dumps(available_tools, indent=2)}")
+        logger.debug(
+            f"available_tools: {json.dumps(available_tools, indent=2)}")
 
         # Initial Claude API call
-        response = self.llm_provider.call(
-            model=self.model_name,
+        response = self.llm.call(
             messages=self.messages.get(),
             tools=available_tools
         )
@@ -61,7 +62,7 @@ class MCPClient:
         final_text = []
 
         assistant_message_content = []
-        for content in response.content:
+        for content in response:
             if content.type == 'text':
                 final_text.append(content.text)
                 assistant_message_content.append(content)
@@ -77,21 +78,18 @@ class MCPClient:
                 assistant_message_content.append(content)
                 self.messages.set(assistant_message_content)
 
-                self.messages.set({
+                self.messages.set([{
                     "type": "tool_result",
                     "tool_use_id": content.id,
                     "content": result.content
-                },
-                    role="user"
-                )
+                }], role="user")
 
-                response = self.llm_provider.call(
-                    model=self.model_name,
+                response = self.llm.call(
                     messages=self.messages.get(),
                     tools=available_tools
                 )
 
-                final_text.append(response.content[0].text)
+                final_text.append(response[0].text)
 
         self.messages.set("\n".join(final_text))
 

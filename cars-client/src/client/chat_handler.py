@@ -1,5 +1,5 @@
-from config.settings import logger
-from client.strings.messages import welcome_message
+from src.config.settings import logger
+from src.client.strings.messages import welcome_message
 
 
 class Chat:
@@ -12,22 +12,27 @@ class Chat:
         """Run an interactive chat loop"""
 
         logger.info(welcome_message)
-        logger.info("Para encerrar o chat, escreva q")
 
-        self.messages.add(welcome_message)
+        self.messages.set(welcome_message)
 
         while True:
             try:
-                query = input("\User: ").strip()
+                query = input("User: ").strip()
 
                 if query.lower() == 'q':
                     logger.info("Até breve")
                     break
 
-                self.messages.add(query, role="user")
+                if (len(query) == 0):
+                    logger.info("Ops! o que quis dizer?")
+                    continue
+
+                self.messages.set(query, role="user")
                 await self.mcp_client.process_query()
 
-                logger.info(f"\n\R: {self.messages}")
+                logger.info("R:-------------------------------------\n")
+                logger.info(str(self.messages))
+                logger.info("\n---------------------------------------\n")
 
             except Exception as e:
                 logger.exception(f"\nLoop Error", exc_info=e)

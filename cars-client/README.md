@@ -2,3 +2,5 @@
 
 ![Version](https://img.shields.io/badge/version-1.0.0-blue.svg)
 ![Python](https://img.shields.io/badge/python-3.10+-green.svg)
+
+uv run src/main.py ../cars-server/main.py
