@@ -19,6 +19,9 @@ A comunicação entre cliente e servidor é feita via **MCP utilizando o transpo
 O projeto foi baseado na documentação oficial do protocolo MCP:
 👉 [https://modelcontextprotocol.io](https://modelcontextprotocol.io)
 
+
+OBSERVAÇÃO: Embora eu tenha adicionado alguns testes unitários, é evidente que eles não cobrem todo o projeto, pois isso levaria um tempo mais longo do que o aceitável para um Desafio para vaga de emprego.
+
 ## LLM utilizado
 
 O modelo padrão utilizado nos testes foi o `Claude-Haiku-3.5` da Anthropic. Outros modelos podem ser utilizados, desde que seja implementado o provedor correspondente em:
