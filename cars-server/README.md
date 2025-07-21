@@ -41,14 +41,14 @@ E o ative no terminal como administrador, (se estiver no Windows), e se ainda n�
 
 ### 2 - Instale as dependêcias do projeto (do servidor):
 `$ uv sync --locked`
-ou
-`$ uv pip install -r requirements.txt`
 
 ### 3 - Crie e popule o banco de dados MongoDB para testes:
 `uv run populate_db.py p`
+para verificar, use:
+`uv run populate_db.py c`
 
 ### 4 - Testes iniciais (opcional) com o servidor MCP e cliente Claude Desktop (Se estiver no Windows):
-- [https://modelcontextprotocol.io/quickstart/server]
+- Para outros sistemas operacionais, consultar [https://modelcontextprotocol.io/quickstart/server]
 
 1. Inicie o Claude Desktop, acesse a opção `Busca e Ferramentas`, ao lado do botão para incluir anexos.
 2. Selecione a opção `gerenciar conectores` e depois, acesse a aba `Desenvolvedor`, e depois, `Edit Config`;
@@ -58,20 +58,23 @@ ou
 {
     "mcpServers": {
         "cars": {
-            "command": "wsl.exe",
+            "command": "uv",
             "args": [
-                "-d", "Ubuntu",
-                "bash", "-lc",
-                "cd path/to/c2s_test/cars-server && source .venv/bin/activate && uv run main.py"
+                "--directory",
+                "C:\\path\\to\\c2s\\cars-server",
+                "run",
+                "main.py"
             ]
         }
     }
 }
 ```
-5. Inicie o servidor MCP: No diretório rais do servidor (/cars-server), execute `$ uv run main.py`. Os logs aparecerão em `server_app.log`
+5. Inicie o servidor MCP: No diretório rais do servidor (/cars-server), execute:
+    `$ uv run main.py`. 
+    Os logs aparecerão em `server_app.log`
 6. Feche o cliente Claude (se estiver aberto) e abra novamente.
 7. Se tudo correr bem, ao clicar novamente em `Busca e Ferramentas`, deve aparecer o nome do servidor nesta lista. No caso, [cars]
-8. Para verificar o funcionamento, faça uma pesquisa aleatória no chat da Claude sobre os carros, e verifique nos logs se está de fato funcionando como o esperado.
+8. Para verificar o funcionamento, faça uma pesquisa aleatória no chat da Claude sobre os carros, e verifique nos logs `server_app.log`.
 
 ## Exemplos de Queries
 ```json
@@ -94,6 +97,9 @@ cars-server/
 │   ├── car_service.py
 │   ├── car_repository.py
 │   └── config/
+│       ├── db_config.py
+│       ├── logger.py
+│       └── __init__.py
 ├── tests/
 ├── main.py
 ├── populate_db.py

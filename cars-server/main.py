@@ -1,11 +1,12 @@
+from dotenv import load_dotenv
 from typing import Literal
 from mcp.server.fastmcp import FastMCP
 
 from src.config.logger import logger
 from src.config.db_config import db
-from src.car_service import search_cars
-from src.file_handler import save_as_pdf
+from src.car_service import search_cars, save_as_pdf
 
+load_dotenv()
 mcp = FastMCP("cars")
 
 
@@ -65,6 +66,7 @@ async def save_to_file(title: str, content: str) -> str:
         f"SERVER - save_to_file: title: {title} content: {type(content)}-\n")
 
     return save_as_pdf(title, content)
+
 
 if __name__ == "__main__":
 
