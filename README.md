@@ -3,6 +3,9 @@
 ![Version](https://img.shields.io/badge/version-1.0.0-blue.svg)
 ![Python](https://img.shields.io/badge/python-3.10+-green.svg)
 
+### Demonstração:
+https://youtu.be/Bhy6K45URcE
+
 ## Descrição
 
 Este projeto consiste na implementação de um sistema de atendimento via chat utilizando o padrão **Cliente-Servidor com o protocolo MCP (Model Context Protocol)**.
